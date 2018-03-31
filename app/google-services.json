@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "438694926674",
+    "firebase_url": "https://contact-754d8.firebaseio.com",
+    "project_id": "contact-754d8",
+    "storage_bucket": "contact-754d8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438694926674:android:f61acd4998b1d972",
+        "android_client_info": {
+          "package_name": "com.example.anzu.mainactivity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "438694926674-obhua6kc6bvi2j7emck013a0vi39plie.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9MtMEJx9WSZfoPb1h7dbQnW-sMZz7oFc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

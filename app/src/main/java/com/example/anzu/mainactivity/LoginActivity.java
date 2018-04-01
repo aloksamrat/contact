@@ -12,6 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
 /**
  * Created by ANZU on 3/22/2018.
  */
@@ -24,6 +28,7 @@ import android.widget.Toast;
 public class LoginActivity extends Activity {
     EditText et_name,et_password;
     Button btn_login,btn_signup;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +71,6 @@ public class LoginActivity extends Activity {
                         Toast.makeText(LoginActivity.this, "User name or Password mismatched", Toast.LENGTH_LONG).show();
                     }
                 }
-
             }
         });
         btn_signup.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +81,11 @@ public class LoginActivity extends Activity {
                 startActivity(new Intent(LoginActivity.this, SignupActivity.class));
             }
         });
+        MobileAds.initialize(this, "ca-app-pub-5852942202086652~3117374042");
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
     }
         public String[] getNameAndPasswordFromPref()
         {

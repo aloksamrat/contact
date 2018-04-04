@@ -9,6 +9,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mantraideas.simplehttp.datamanager.DataRequestManager;
 import com.mantraideas.simplehttp.datamanager.OnDataRecievedListener;
 import com.mantraideas.simplehttp.datamanager.OnDataRecievedProgressListener;
@@ -28,14 +33,48 @@ import java.util.List;
  */
 
 public class ContactlistActivity extends Activity {
+    private DatabaseReference mDatabase;
+// ...
+
     List<Contact> contactList;
     FloatingActionButton fab_add;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contactlist);
         setTitle("Contact");
-        contactList= new ArrayList<>();
+        contactList = new ArrayList<>();
+        final ContactAdapter adapter = new ContactAdapter(this, R.layout.row_contact, contactList);
+        ListView lv_contact;
+        lv_contact = (ListView) findViewById(R.id.lv_contact);
+        lv_contact.setAdapter(adapter);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d("ContactListActivity","database changed");
+//                Toast.makeText(getApplicationContext(),"Database changed",Toast.LENGTH_SHORT).show();
+//                Contact value = dataSnapshot.getValue(Contact.class);
+//                Toast.makeText(getApplicationContext(), "Database changed of "+ value.name, Toast.LENGTH_SHORT).show();
+
+
+//                Log.d("Contactlist", "Value is: " + value);
+                contactList.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    // TODO: handle the post
+                    contactList.add(postSnapshot.getValue(Contact.class));
+                }
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 //        the data here is from dummy
 //        String dummy_list = "[ \n" +
 //                "\t\n" +
@@ -77,39 +116,31 @@ public class ContactlistActivity extends Activity {
         // replace this with your domain to test
         request.addUrl("http://30.30.0.192:8000/contact/get");
         request.addMethod(Method.GET);
-       // request.addMinimumServerCallTimeDifference(5000);
+        // request.addMinimumServerCallTimeDifference(5000);
 //        execute the request
-        DataRequestManager<String> requestManager = DataRequestManager.getInstance(getApplicationContext(), String.class);
-        requestManager.addRequestBody(request).addOnDataRecieveListner(new OnDataRecievedListener() {
-            @Override
-            public void onDataRecieved(Response response, Object object) {
-                if (response==Response.OK)
-                {
-                    Log.d("test", " data from server = " + object.toString());
-                }
-                else
-                {
-                    Toast.makeText(ContactlistActivity.this,"No internet connection",Toast.LENGTH_LONG).show();
-                }
-
-            }
-        }, new OnDataRecievedProgressListener() {
-            @Override
-            public void onDataRecievedProgress(int completedPercentage) {
-                Log.d("MainActivity", "Progress = " + completedPercentage);
-            }
-        });
-        requestManager.sync();
-
-        ContactAdapter adapter = new ContactAdapter(this, R.layout.row_contact,contactList);
-        ListView lv_contact;
-        lv_contact= (ListView) findViewById(R.id.lv_contact);
-        lv_contact.setAdapter(adapter);
-        fab_add= findViewById(R.id.fab_add);
+//        DataRequestManager<String> requestManager = DataRequestManager.getInstance(getApplicationContext(), String.class);
+//        requestManager.addRequestBody(request).addOnDataRecieveListner(new OnDataRecievedListener() {
+//            @Override
+//            public void onDataRecieved(Response response, Object object) {
+//                if (response == Response.OK) {
+//                    Log.d("test", " data from server = " + object.toString());
+//                } else {
+//                    Toast.makeText(ContactlistActivity.this, "No internet connection", Toast.LENGTH_LONG).show();
+//                }
+//
+//            }
+//        }, new OnDataRecievedProgressListener() {
+//            @Override
+//            public void onDataRecievedProgress(int completedPercentage) {
+//                Log.d("MainActivity", "Progress = " + completedPercentage);
+//            }
+//        });
+//        requestManager.sync();
+        fab_add = findViewById(R.id.fab_add);
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ContactlistActivity.this,SaveContactActivity.class));
+                startActivity(new Intent(ContactlistActivity.this, SaveContactActivity.class));
             }
         });
     }

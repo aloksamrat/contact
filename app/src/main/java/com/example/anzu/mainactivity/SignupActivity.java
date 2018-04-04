@@ -7,10 +7,21 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.mantraideas.simplehttp.datamanager.DataRequestManager;
+import com.mantraideas.simplehttp.datamanager.OnDataRecievedListener;
+import com.mantraideas.simplehttp.datamanager.OnDataRecievedProgressListener;
+import com.mantraideas.simplehttp.datamanager.dmmodel.DataRequest;
+import com.mantraideas.simplehttp.datamanager.dmmodel.DataRequestPair;
+import com.mantraideas.simplehttp.datamanager.dmmodel.Method;
+import com.mantraideas.simplehttp.datamanager.dmmodel.Response;
+
+import org.json.JSONObject;
 
 /**
  * Created by ANZU on 3/23/2018.
@@ -63,7 +74,9 @@ public class SignupActivity extends Activity {
 //                save the date in preference
                 if (validate)
                 {
-                    saveUserData(name,pass);
+//                    saveUserData(name,pass);
+                    saveUserDataInServer(name,pass);
+
                     Toast.makeText(SignupActivity.this, "Sign Up successful", Toast.LENGTH_SHORT).show();
                     finish();
 
@@ -71,6 +84,51 @@ public class SignupActivity extends Activity {
             }
         });
     }
+
+    private void saveUserDataInServer(String name, String pass) {
+        DataRequestPair requestPair = DataRequestPair.create();
+        requestPair.put("password", pass);
+        requestPair.put("username", name);
+        DataRequest request = DataRequest.getInstance();
+
+        // replace this with your domain to test
+        request.addUrl("http://30.30.0.192:8000/contact/add/");
+        request.addDataRequestPair(requestPair);
+        request.addMethod(Method.POST);
+
+        DataRequestManager<String> requestManager = DataRequestManager.getInstance(getApplicationContext(), String.class);
+        requestManager.addRequestBody(request).addOnDataRecieveListner(new OnDataRecievedListener() {
+            @Override
+            public void onDataRecieved(Response response, Object object) {
+                if(response==Response.OK){
+                Log.d("test", " data from server = " + object.toString());
+                try {
+                    JSONObject JSon = new JSONObject(object.toString());
+                    boolean success = JSon.optBoolean("success");
+                    String message = JSon.optString("message");
+                    Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+                    if(success){
+                        finish();
+                    }
+
+
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+
+                }
+            }
+            else {
+                    Toast.makeText(getApplicationContext(),response.getMessage(),Toast.LENGTH_SHORT).show();
+
+                }
+                }
+
+        });
+        requestManager.sync();
+    }
+
     public void saveUserData(String name, String pass)
     {
 //        initialize the preference

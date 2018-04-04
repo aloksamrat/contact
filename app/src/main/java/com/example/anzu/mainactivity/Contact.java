@@ -1,14 +1,21 @@
 package com.example.anzu.mainactivity;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by Ashok Sir on 3/24/2018.
  */
+@IgnoreExtraProperties
 public class Contact {
     String id;
     String name;
     String phoneno;
     String email;
     String description;
+
+    public Contact() {
+    }
+
     public Contact(String name, String phoneno, String email, String description) {
         this.name = name;
         this.phoneno = phoneno;
